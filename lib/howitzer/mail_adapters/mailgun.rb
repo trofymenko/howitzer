@@ -29,7 +29,7 @@ module MailAdapters
 
     def self.find_retry_params
       {
-        timeout: settings.timeout_small,
+        timeout: settings.timeout_mailgun,
         sleep: settings.timeout_short,
         silent: true,
         logger: log,
@@ -42,8 +42,8 @@ module MailAdapters
       event = event_by(recipient, subject)
       fail ::Howitzer::EmailNotFoundError, 'Message not received yet, retry...' unless event
 
-      message_url = "domains/#{::Mailgun::Connector.instance.domain}/messages/#{event['storage']['key']}"
-      ::Mailgun::Connector.instance.client.get(message_url).to_h
+      message_url = event['storage']['url']
+      ::Mailgun::Connector.instance.client.get_url(message_url).to_h
     end
     private_class_method :retrieve_message
 
